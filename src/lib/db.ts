@@ -1,13 +1,12 @@
-import { PrismaClient } from '@prisma/client'
+import mysql from 'mysql2/promise';
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'playjoy_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+});
 
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: ['query'],
-  })
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+export default pool;

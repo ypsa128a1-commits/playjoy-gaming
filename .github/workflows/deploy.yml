@@ -1,0 +1,89 @@
+name: Build and Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          DB_HOST: localhost
+          DB_USER: aurazenm_root
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: aurazenm_db
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Create deployment package
+        run: |
+          tar -czvf deploy.tar.gz \
+            .next \
+            public \
+            package.json \
+            package-lock.json \
+            next.config.mjs \
+            prisma \
+            src \
+            tsconfig.json \
+            tailwind.config.ts \
+            postcss.config.mjs
+
+      - name: Deploy to VPS
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "deploy.tar.gz"
+          target: "/tmp"
+
+      - name: Extract and restart on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd /var/www/playjoy.id
+
+            # Backup current deployment
+            if [ -d ".next" ]; then
+              mv .next .next.backup.$(date +%s) 2>/dev/null || true
+            fi
+
+            # Extract new deployment
+            tar -xzvf /tmp/deploy.tar.gz -C /var/www/playjoy.id
+
+            # Install production dependencies
+            npm ci --production
+
+            # Generate Prisma client
+            npx prisma generate
+
+            # Restart PM2
+            pm2 restart playjoy
+
+            # Clean up
+            rm /tmp/deploy.tar.gz
+            rm -rf .next.backup.* 2>/dev/null || true
+
+            echo "Deployment completed successfully!"
