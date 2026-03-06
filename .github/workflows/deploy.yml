@@ -32,24 +32,13 @@ jobs:
 
       - name: Create deployment package
         run: |
-          mkdir -p deploy
-          cp -r .next deploy/
-          cp -r node_modules deploy/
-          cp -r public deploy/
-          cp -r src deploy/
-          cp package.json deploy/
-          cp package-lock.json deploy/
-          cp next.config.mjs deploy/
-          cp tsconfig.json deploy/
-          cp tailwind.config.ts deploy/
-          cp .env deploy/
-          cp -r prisma deploy/
+          tar -czf deploy.tar.gz .next public package.json package-lock.json next.config.mjs tsconfig.json tailwind.config.ts src prisma
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: deployment
-          path: deploy/
+          path: deploy.tar.gz
 
   deploy:
     needs: build
@@ -60,24 +49,14 @@ jobs:
         with:
           name: deployment
 
-      - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: root
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: 22
-          script: |
-            cd /var/www/playjoy.id
-            rm -rf .next
-            cp -r ${{ github.workspace }}/.next ./
-            cp -r ${{ github.workspace }}/node_modules ./
-            cp -r ${{ github.workspace }}/src ./
-            cp ${{ github.workspace }}/package.json ./
-            cp ${{ github.workspace }}/package-lock.json ./
-            cp ${{ github.workspace }}/next.config.mjs ./
-            cp ${{ github.workspace }}/tsconfig.json ./
-            cp ${{ github.workspace }}/tailwind.config.ts ./
-            cp ${{ github.workspace }}/.env ./
-            cp -r ${{ github.workspace }}/prisma ./
-            pm2 restart playjoy || pm2 start npm --name playjoy -- run start
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        run: |
+          scp deploy.tar.gz root@${{ secrets.VPS_HOST }}:/tmp/
+          ssh root@${{ secrets.VPS_HOST }} "cd /var/www/playjoy.id && rm -rf .next.backup && mv .next .next.backup 2>/dev/null || true && tar -xzf /tmp/deploy.tar.gz && npm install --omit=dev && pm2 restart playjoy || pm2 start npm --name playjoy -- run start && pm2 save && rm -f /tmp/deploy.tar.gz"
