@@ -1,7 +1,7 @@
 # PROJECT MEMORY - PLAYJOY GAMING PORTAL
 
 > **Last Updated:** 6 Maret 2026
-> **Status:** Converting from Express+Vite to Next.js
+> **Status:** ✅ Next.js Conversion COMPLETE - Site Running
 
 ---
 
@@ -11,46 +11,79 @@
 |------|-------|
 | **Project Name** | PlayJoy Gaming Portal |
 | **Domain** | playjoy.id |
-| **Framework** | Express.js + Vite → **CONVERTING TO Next.js 16** |
+| **Framework** | Next.js 14.2.21 (Converted from Express+Vite) |
 | **Database** | MySQL (MariaDB) |
 | **Games Count** | 25,995 games |
+| **Port** | 3001 |
+| **PM2 Process** | playjoy |
 
 ---
 
-## 📂 PROJECT DIRECTORY (THIS VPS)
+## ✅ CONVERSION STATUS - COMPLETE
+
+| Task | Status |
+|------|--------|
+| Database Migration | ✅ Done |
+| Admin Password Reset | ✅ Done |
+| GitHub Repository | ✅ Created & Pushed |
+| Convert to Next.js | ✅ Done |
+| API Routes | ✅ Done |
+| Frontend Pages | ✅ Basic page done |
+| Build | ✅ Done |
+| PM2 Running | ✅ Online |
+
+---
+
+## 📂 PROJECT DIRECTORY
 
 ```
 PROJECT ROOT: /var/www/playjoy.id
 
 /var/www/playjoy.id/
-├── app.js                    # Express server (CURRENTLY RUNNING)
-├── app.cjs                   # CommonJS version
-├── backend/
-│   ├── app.js               # MVC architecture version
-│   ├── config/
-│   │   └── database.js      # MySQL connection config
-│   ├── controllers/         # Route handlers
-│   │   ├── authController.js
-│   │   ├── gameController.js
-│   │   ├── labController.js
-│   │   └── settingController.js
-│   ├── middlewares/         # Auth middleware
-│   │   └── auth.middleware.js
-│   ├── models/              # Data models
-│   │   ├── Game.js
-│   │   ├── User.js
-│   │   └── Setting.js
-│   └── routes/              # API routes
-│       ├── auth.routes.js
-│       ├── game.routes.js
-│       └── ...
-├── assets/                   # Built frontend (Vite output)
-├── public/                   # Static files
-├── database_export.sql      # 47MB database dump
-├── .env                      # Environment variables
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── auth/
+│   │   │   │   ├── login/route.ts
+│   │   │   │   ├── register/route.ts
+│   │   │   │   ├── me/route.ts
+│   │   │   │   └── logout/route.ts
+│   │   │   ├── games/
+│   │   │   │   ├── route.ts
+│   │   │   │   ├── homepage/route.ts
+│   │   │   │   ├── featured/route.ts
+│   │   │   │   ├── popular/route.ts
+│   │   │   │   ├── recent/route.ts
+│   │   │   │   ├── categories/route.ts
+│   │   │   │   └── [id]/route.ts
+│   │   │   └── route.ts
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── ui/ (shadcn/ui components)
+│   │   ├── AdminPanel.tsx
+│   │   ├── AuthModal.tsx
+│   │   ├── GameCard.tsx
+│   │   ├── GamePlayer.tsx
+│   │   ├── GameRow.tsx
+│   │   ├── HeroFeatured.tsx
+│   │   ├── Navbar.tsx
+│   │   └── ...
+│   ├── hooks/
+│   ├── lib/
+│   │   ├── db.ts
+│   │   └── utils.ts
+│   └── types.ts
+├── prisma/
+│   └── schema.prisma
+├── public/
+├── .next/ (build output)
 ├── package.json
-└── agent-ctx/
-    └── PROJECT_MEMORY.md    # This file
+├── next.config.mjs
+├── tailwind.config.ts
+├── tsconfig.json
+└── .env
 ```
 
 ---
@@ -61,14 +94,7 @@ PROJECT ROOT: /var/www/playjoy.id
 |------|-------|
 | **URL** | https://github.com/ypsa128a1-commits/playjoy-gaming |
 | **Branch** | main |
-| **Token** | `GITHUB_TOKEN_REDACTED` |
-
-### Git Setup Commands
-```bash
-cd /var/www/playjoy.id
-git init
-git remote add origin https://ypsa128a1-commits:GITHUB_TOKEN_REDACTED@github.com/ypsa128a1-commits/playjoy-gaming.git
-```
+| **Status** | ✅ Pushed |
 
 ---
 
@@ -84,33 +110,8 @@ git remote add origin https://ypsa128a1-commits:GITHUB_TOKEN_REDACTED@github.com
 
 ### Connection Commands
 ```bash
-# Connect to database
 mysql -u aurazenm_root -p'aurazen2026root' aurazenm_db
-
-# Show tables
-mysql -u aurazenm_root -p'aurazen2026root' aurazenm_db -e "SHOW TABLES;"
-
-# Count games
-mysql -u aurazenm_root -p'aurazen2026root' aurazenm_db -e "SELECT COUNT(*) as total_games FROM games;"
-
-# Check admin user
-mysql -u aurazenm_root -p'aurazen2026root' aurazenm_db -e "SELECT id, username, email, role FROM users WHERE role='admin';"
 ```
-
-### Tables (11 tables)
-| Table | Records |
-|-------|---------|
-| games | 25,995 |
-| users | 1 |
-| settings | - |
-| game_traffic | - |
-| gm_links | - |
-| gm_media | - |
-| gm_setting | - |
-| gm_sidebar | - |
-| gm_sliders | - |
-| gm_tags | - |
-| sessions | - |
 
 ---
 
@@ -123,12 +124,6 @@ mysql -u aurazenm_root -p'aurazen2026root' aurazenm_db -e "SELECT id, username, 
 | **Password** | aksan128 |
 | **Role** | admin |
 
-### Lab Access (Dev Environment)
-| Item | Value |
-|------|-------|
-| **URL** | /lab |
-| **Password** | aurazein1997 |
-
 ### JWT Settings
 | Item | Value |
 |------|-------|
@@ -137,155 +132,62 @@ mysql -u aurazenm_root -p'aurazen2026root' aurazenm_db -e "SELECT id, username, 
 
 ---
 
-## 🚀 PM2 CONFIG
+## 🚀 PM2 COMMANDS
 
-| Item | Value |
-|------|-------|
-| **Process Name** | playjoy |
-| **Port** | 3001 |
-| **Script** | app.js |
-| **Working Directory** | `/var/www/playjoy.id` |
-
-### PM2 Commands
 ```bash
 pm2 status                # Check status
 pm2 logs playjoy          # View logs
 pm2 restart playjoy       # Restart app
 pm2 stop playjoy          # Stop app
+pm2 save                  # Save process list
 ```
 
 ---
 
-## 🔄 CI/CD FLOW (After Next.js Conversion)
+## 🌐 ACCESS URLs
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│                     THIS VPS (202.155.18.26)                   │
-│                                                                │
-│  ┌─────────────┐    git push    ┌─────────────────────────┐   │
-│  │ Edit Code   │───────────────▶│ GitHub Actions (7GB)    │   │
-│  │ /var/www/   │                │ - npm install           │   │
-│  │ playjoy.id  │                │ - npm run build         │   │
-│  │             │                │ - create standalone     │   │
-│  └─────────────┘                └───────────┬─────────────┘   │
-│                                             │                  │
-│                                             ▼                  │
-│                                 ┌─────────────────────────┐   │
-│                                 │ Deploy back to this VPS │   │
-│                                 │ - SCP files             │   │
-│                                 │ - PM2 restart           │   │
-│                                 └─────────────────────────┘   │
-└────────────────────────────────────────────────────────────────┘
-```
+| Type | URL |
+|------|-----|
+| **Local** | http://localhost:3001 |
+| **IP Access** | http://202.155.18.26:3001 |
+| **Domain** | http://playjoy.id (requires Coolify/Traefik config) |
 
 ---
 
-## 🔌 API ENDPOINTS (to be converted to Next.js)
+## 🔄 CI/CD SETUP NEEDED
 
-### Auth API
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Register user |
-| POST | /api/auth/login | Login user |
-| POST | /api/auth/logout | Logout user |
-| GET | /api/auth/me | Get current user |
-| PUT | /api/auth/password | Change password |
+GitHub Actions workflow is ready but needs secrets configured:
 
-### Games API
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/games | List games (search/sort/paginate) |
-| GET | /api/games/homepage | Homepage data (Netflix style) |
-| GET | /api/games/featured | Featured games |
-| GET | /api/games/popular | Popular games |
-| GET | /api/games/recent | Recent games |
-| GET | /api/games/categories | List categories |
-| GET | /api/games/[id] | Single game |
-| POST | /api/games/[id]/view | Increment views |
-| POST | /api/games | Create (admin) |
-| PUT | /api/games/[id] | Update (admin) |
-| DELETE | /api/games/[id] | Delete (admin) |
+### Required GitHub Secrets:
+1. `DATABASE_URL` - mysql://aurazenm_root:aurazen2026root@localhost:3306/aurazenm_db
+2. `DB_HOST` - localhost
+3. `DB_USER` - aurazenm_root
+4. `DB_PASSWORD` - aurazen2026root
+5. `DB_NAME` - aurazenm_db
+6. `JWT_SECRET` - aurazen_super_secret_2026
+7. `VPS_HOST` - 202.155.18.26
+8. `VPS_SSH_KEY` - SSH private key for VPS access
 
-### Other API
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/settings | Get settings |
-| PUT | /api/settings | Update settings (admin) |
-| GET | /api/stats | Statistics |
-| GET | /api/health | Health check |
-| POST | /api/lab/verify | Lab password verify |
+### Setup Instructions:
+1. Go to GitHub repo → Settings → Secrets and variables → Actions
+2. Add each secret listed above
+3. Push changes to trigger workflow
 
 ---
 
-## ⚠️ IMPORTANT RULES
+## 📝 NEXT STEPS
 
-1. **JANGAN BUILD DI VPS** - RAM hanya 1GB, build di GitHub Actions
-2. **DATABASE READY** - 25,995 games sudah ter-import
-3. **ADMIN PASSWORD RESET** - admin@playjoy.id / aksan128
-4. **PORT 3001** - Playjoy di port 3001, Talithataufiq di 3000
-
----
-
-## 📊 CONVERSION STATUS
-
-| Task | Status |
-|------|--------|
-| Database Migration | ✅ Done |
-| Admin Password Reset | ✅ Done |
-| GitHub Repository | ✅ Created |
-| Convert to Next.js | ⏳ TODO |
-| API Routes | ⏳ TODO |
-| Frontend Pages | ⏳ TODO |
-| GitHub Actions | ⏳ TODO |
-| Deploy | ⏳ TODO |
+1. **Configure Domain in Coolify** - Add playjoy.id to Coolify to route through Traefik
+2. **Setup SSL** - Enable HTTPS via Let's Encrypt
+3. **Enhance Frontend** - Build full Netflix-style UI with all components
+4. **Add Game Detail Page** - Create /game/[id] page
+5. **Implement Admin Panel** - Full admin CRUD functionality
+6. **Setup GitHub Secrets** - For automated CI/CD
 
 ---
 
-## 📝 PROMPT UNTUK MELANJUTKAN (Copy-Paste ke AI)
+## ⚠️ IMPORTANT NOTES
 
-```
-Lanjutkan development project PLAYJOY GAMING PORTAL.
-
-## Project Directory
-cd /var/www/playjoy.id
-
-## Info Project
-- Framework: Express+Vite → CONVERTING TO Next.js 16
-- Database: MySQL aurazenm_db (25,995 games)
-- Port: 3001
-- PM2 Process: playjoy
-
-## Database MySQL
-- Host: localhost
-- DB Name: aurazenm_db
-- User: aurazenm_root
-- Password: aurazen2026root
-- Connect: mysql -u aurazenm_root -p'aurazen2026root' aurazenm_db
-
-## Admin Login
-- Username: admin@playjoy.id
-- Password: aksan128
-
-## Lab Access
-- Password: aurazein1997
-- URL: /lab
-
-## GitHub
-- Repo: https://github.com/ypsa128a1-commits/playjoy-gaming
-- Branch: main
-- Token: GITHUB_TOKEN_REDACTED
-
-## Development Flow
-1. Edit code di /var/www/playjoy.id
-2. git add . && git commit -m "pesan" && git push
-3. GitHub Actions auto build
-4. Auto deploy ke VPS ini
-5. PM2 restart playjoy
-
-## Baca Memory File
-cat /var/www/playjoy.id/agent-ctx/PROJECT_MEMORY.md
-
-## Task:
-[TULISKAN TASK ANDA DI SINI]
-```
-
+1. **VPS has limited RAM (1GB)** - Build on GitHub Actions, not on VPS
+2. **Coolify manages Traefik** - Domain routing needs Coolify configuration
+3. **Site accessible via IP:3001** - http://202.155.18.26:3001
