@@ -25,7 +25,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Next.js
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Build Next.js (SSR)
         run: npm run build
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -38,16 +41,7 @@ jobs:
 
       - name: Create deployment archive
         run: |
-          tar -czf deployment.tar.gz \
-            .next \
-            public \
-            package.json \
-            package-lock.json \
-            next.config.mjs \
-            tsconfig.json \
-            tailwind.config.ts \
-            src \
-            prisma
+          tar -czf deployment.tar.gz             .next             public             package.json             package-lock.json             next.config.mjs             prisma             node_modules/.prisma             node_modules/@prisma
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -72,39 +66,80 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env.production
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env.production
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env.production
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env.production
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env.production
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.production
+          echo "NODE_ENV=production" >> .env.production
+
       - name: Deploy to VPS
         run: |
           scp deployment.tar.gz root@${{ secrets.VPS_HOST }}:/tmp/deployment.tar.gz
+          scp .env.production root@${{ secrets.VPS_HOST }}:/tmp/.env.production
           ssh root@${{ secrets.VPS_HOST }} << 'DEPLOY_SCRIPT'
             set -e
             
             cd /var/www/playjoy.id
             
-            # Backup current build
+            # Stop PM2 process
+            pm2 stop playjoy 2>/dev/null || true
+            
+            # Backup and clean
             rm -rf .next.backup
             mv .next .next.backup 2>/dev/null || true
             
             # Extract new build
             tar -xzf /tmp/deployment.tar.gz
             
+            # Copy .env file
+            cp /tmp/.env.production .env
+            
             # Install production dependencies
             npm install --omit=dev
             
-            # Generate Prisma client
+            # Generate Prisma client (in case schema changed)
             npx prisma generate
             
-            # Restart application
-            pm2 restart playjoy || pm2 start npm --name playjoy -- run start
+            # Sync database schema
+            npx prisma db push --accept-data-loss || true
+            
+            # Create ecosystem config if not exists
+            cat > ecosystem.config.js << 'ECO'
+            module.exports = {
+              apps: [{
+                name: "playjoy",
+                cwd: "/var/www/playjoy.id",
+                script: "npm",
+                args: "start",
+                env: {
+                  NODE_ENV: "production",
+                  PORT: "3001"
+                },
+                instances: 1,
+                autorestart: true,
+                watch: false,
+                max_memory_restart: "500M"
+              }]
+            }
+            ECO
+            
+            # Start/restart with PM2
+            pm2 start ecosystem.config.js --update-env
             pm2 save
             
             # Cleanup
-            rm -f /tmp/deployment.tar.gz
+            rm -f /tmp/deployment.tar.gz /tmp/.env.production
             rm -rf .next.backup
             
-            echo "Deployment completed!"
+            echo "Deployment completed successfully!"
           DEPLOY_SCRIPT
 
       - name: Verify deployment
         run: |
-          sleep 10
-          curl -sI https://playjoy.id | head -5
+          sleep 5
+          ssh root@${{ secrets.VPS_HOST }} "curl -sI http://localhost:3001 | head -5"
+

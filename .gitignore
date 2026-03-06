@@ -1,39 +1,6 @@
-# Dependencies
 node_modules/
-backend/node_modules/
-
-# Environment files
+.next/
 .env
 .env.local
-.env.production
-backend/.env
-
-# Build outputs
-.next/
-dist/
-build/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
 *.log
-npm-debug.log*
-
-# Database dumps
-*.sql
-
-# Backup files
-*.backup
-*.bak
-*.bak*
-
-# Agent context (optional - you can include this if needed)
-# agent-ctx/
+.pm2/

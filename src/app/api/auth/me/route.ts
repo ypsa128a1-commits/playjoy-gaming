@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'aurazen_super_secret_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret_in_production';
 
 export async function GET(request: Request) {
   try {

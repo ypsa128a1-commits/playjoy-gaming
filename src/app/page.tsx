@@ -27,14 +27,22 @@ export default function Home() {
   useEffect(() => {
     fetch('/api/games/homepage')
       .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setData(data.data);
+      .then(response => {
+        if (response.success && response.data) {
+          // Ensure all arrays exist with defaults
+          const safeData: HomeData = {
+            featured: Array.isArray(response.data.featured) ? response.data.featured : [],
+            popular: Array.isArray(response.data.popular) ? response.data.popular : [],
+            recent: Array.isArray(response.data.recent) ? response.data.recent : [],
+            categories: Array.isArray(response.data.categories) ? response.data.categories : [],
+            categoryGames: Array.isArray(response.data.categoryGames) ? response.data.categoryGames : [],
+          };
+          setData(safeData);
         } else {
-          setError(data.message);
+          setError(response.message || 'Failed to load data');
         }
       })
-      .catch(err => setError(err.message))
+      .catch(err => setError(err.message || 'Network error'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -121,7 +129,7 @@ export default function Home() {
                   </div>
                   <div className="p-2">
                     <h3 className="font-semibold text-sm truncate">{game.title}</h3>
-                    <span className="text-xs text-gray-400">{game.views.toLocaleString()} plays</span>
+                    <span className="text-xs text-gray-400">{game.views?.toLocaleString() || 0} plays</span>
                   </div>
                 </a>
               ))}
@@ -129,11 +137,11 @@ export default function Home() {
           </section>
         )}
 
-        {data?.categoryGames && data.categoryGames.map((cat) => (
+        {data?.categoryGames && Array.isArray(data.categoryGames) && data.categoryGames.map((cat) => (
           <section key={cat.category} className="mb-8">
             <h2 className="text-2xl font-bold mb-4 capitalize">{cat.category} Games</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {cat.games.map((game) => (
+              {Array.isArray(cat.games) && cat.games.map((game) => (
                 <a
                   key={game.id}
                   href={`/game/${game.id}`}

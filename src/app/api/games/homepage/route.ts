@@ -19,23 +19,33 @@ export async function GET() {
       'SELECT category, COUNT(*) as count FROM games WHERE is_active = 1 GROUP BY category ORDER BY count DESC'
     );
 
-    const [categoryGames] = await Promise.all(
-      (categories as any[]).slice(0, 8).map(async (cat: any) => {
+    // Get games for each category
+    const categoryGames = [];
+    const categoryList = Array.isArray(categories) ? categories.slice(0, 8) : [];
+    
+    for (const cat of categoryList) {
+      try {
         const [games] = await db.query(
           'SELECT * FROM games WHERE category = ? AND is_active = 1 ORDER BY views DESC LIMIT 10',
           [cat.category]
         );
-        return { category: cat.category, games };
-      })
-    );
+        categoryGames.push({ 
+          category: cat.category, 
+          games: Array.isArray(games) ? games : [] 
+        });
+      } catch (e) {
+        console.error(`Error fetching games for category ${cat.category}:`, e);
+        categoryGames.push({ category: cat.category, games: [] });
+      }
+    }
 
     return NextResponse.json({
       success: true,
       data: {
-        featured,
-        popular,
-        recent,
-        categories: categories,
+        featured: Array.isArray(featured) ? featured : [],
+        popular: Array.isArray(popular) ? popular : [],
+        recent: Array.isArray(recent) ? recent : [],
+        categories: Array.isArray(categories) ? categories : [],
         categoryGames
       }
     });
