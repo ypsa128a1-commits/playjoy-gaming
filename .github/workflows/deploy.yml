@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy PlayJoy
 
 on:
   push:
@@ -6,16 +6,21 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  NODE_VERSION: '20'
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -31,25 +36,36 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           NODE_ENV: production
 
-      - name: Create deployment package
-        run: tar -czf deploy.tar.gz .next public package.json package-lock.json next.config.mjs tsconfig.json tailwind.config.ts src prisma
+      - name: Create deployment archive
+        run: |
+          tar -czf deployment.tar.gz \
+            .next \
+            public \
+            package.json \
+            package-lock.json \
+            next.config.mjs \
+            tsconfig.json \
+            tailwind.config.ts \
+            src \
+            prisma
 
-      - name: Upload artifact
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: deployment
-          path: deploy.tar.gz
+          name: build-artifact
+          path: deployment.tar.gz
+          retention-days: 1
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifact
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: deployment
+          name: build-artifact
 
-      - name: Setup SSH
+      - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
@@ -58,5 +74,37 @@ jobs:
 
       - name: Deploy to VPS
         run: |
-          scp deploy.tar.gz root@${{ secrets.VPS_HOST }}:/tmp/
-          ssh root@${{ secrets.VPS_HOST }} "cd /var/www/playjoy.id && rm -rf .next.backup && mv .next .next.backup 2>/dev/null || true && tar -xzf /tmp/deploy.tar.gz && npm install --omit=dev && pm2 restart playjoy || pm2 start npm --name playjoy -- run start && pm2 save"
+          scp deployment.tar.gz root@${{ secrets.VPS_HOST }}:/tmp/deployment.tar.gz
+          ssh root@${{ secrets.VPS_HOST }} << 'DEPLOY_SCRIPT'
+            set -e
+            
+            cd /var/www/playjoy.id
+            
+            # Backup current build
+            rm -rf .next.backup
+            mv .next .next.backup 2>/dev/null || true
+            
+            # Extract new build
+            tar -xzf /tmp/deployment.tar.gz
+            
+            # Install production dependencies
+            npm install --omit=dev
+            
+            # Generate Prisma client
+            npx prisma generate
+            
+            # Restart application
+            pm2 restart playjoy || pm2 start npm --name playjoy -- run start
+            pm2 save
+            
+            # Cleanup
+            rm -f /tmp/deployment.tar.gz
+            rm -rf .next.backup
+            
+            echo "Deployment completed!"
+          DEPLOY_SCRIPT
+
+      - name: Verify deployment
+        run: |
+          sleep 10
+          curl -sI https://playjoy.id | head -5
