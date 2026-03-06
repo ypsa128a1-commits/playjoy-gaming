@@ -42,8 +42,7 @@ jobs:
             prisma \
             src \
             tsconfig.json \
-            tailwind.config.ts \
-            postcss.config.mjs
+            tailwind.config.ts
 
       - name: Deploy to VPS
         uses: appleboy/scp-action@v0.1.4
