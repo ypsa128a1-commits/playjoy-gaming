@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Play button as main shape -->
+  <polygon points="6,4 6,44 44,24" fill="url(#tealGrad)"/>
+  <!-- Inner lighter play for depth -->
+  <polygon points="10,10 10,38 38,24" fill="#ffffff" opacity="0.15"/>
+  <!-- Face centered and fully visible -->
+  <circle cx="18" cy="19" r="3" fill="#ffffff"/>
+  <path d="M 27 19 L 34 19" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 17 30 Q 25 40 33 30" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+</svg>

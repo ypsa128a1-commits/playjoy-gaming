@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Circle head -->
+  <circle cx="24" cy="24" r="20" fill="url(#tealGrad)"/>
+  <!-- Eyes with play symbol inside -->
+  <circle cx="17" cy="19" r="5" fill="#ffffff"/>
+  <circle cx="31" cy="19" r="5" fill="#ffffff"/>
+  <!-- Smile that looks like play curve -->
+  <path d="M 16 30 Q 24 40 32 30" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+</svg>

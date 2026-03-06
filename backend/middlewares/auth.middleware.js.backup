@@ -1,0 +1,265 @@
+/**
+ * Auth Middleware
+ * JWT verification and user authentication
+ */
+
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'aurazen_super_secret_2026';
+
+/**
+ * Authentication middleware
+ * Verifies JWT token and attaches user to request
+ */
+async function authMiddleware(req, res, next) {
+  try {
+    const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'No token provided'
+      });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid token'
+    });
+  }
+}
+
+/**
+ * Admin middleware
+ * Requires user to have admin role
+ */
+function adminMiddleware(req, res, next) {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Admin access required'
+    });
+  }
+  next();
+}
+
+/**
+ * Lab access middleware
+ * Check if user has lab access via cookie
+ */
+function labAccessMiddleware(req, res, next) {
+  const labAccess = req.cookies?.lab_access;
+
+  // Check if accessing /lab path
+  if (req.path.startsWith('/lab') || req.path === '/lab') {
+    if (labAccess !== 'granted') {
+      // Return lab login page for GET requests
+      if (req.method === 'GET') {
+        return res.send(getLabLoginHTML());
+      }
+      return res.status(401).json({
+        success: false,
+        message: 'Lab access required'
+      });
+    }
+  }
+  next();
+}
+
+/**
+ * Lab login HTML page
+ */
+function getLabLoginHTML() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Lab Access - Aurazein</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .container {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ff6b6b, #ffa502);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      color: #888;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #aaa;
+      font-size: 13px;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      box-shadow: 0 0 0 3px rgba(255,107,107,0.2);
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255,107,107,0.3);
+    }
+    .error {
+      background: rgba(255,82,82,0.15);
+      border: 1px solid rgba(255,82,82,0.3);
+      color: #ff5252;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    .back-link {
+      margin-top: 20px;
+      display: block;
+      color: #888;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .back-link:hover { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🔬</div>
+    <h1>Lab Access</h1>
+    <p class="subtitle">Development Environment</p>
+    <div class="error" id="error"></div>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="password">Enter Lab Password</label>
+        <input type="password" id="password" placeholder="••••••••" required autofocus>
+      </div>
+      <button type="submit">Access Lab</button>
+    </form>
+    <a href="/" class="back-link">← Back to Main Site</a>
+  </div>
+  <script>
+    const form = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('password');
+    const error = document.getElementById('error');
+    let isSubmitting = false;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (isSubmitting) return;
+      isSubmitting = true;
+      
+      const password = passwordInput.value;
+      error.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/lab/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+          credentials: 'include'
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // Small delay to ensure cookie is set
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        } else {
+          error.textContent = data.message || 'Invalid password';
+          error.style.display = 'block';
+          isSubmitting = false;
+        }
+      } catch (err) {
+        error.textContent = 'Connection error. Please try again.';
+        error.style.display = 'block';
+        isSubmitting = false;
+      }
+    });
+  </script>
+</body>
+</html>`;
+}
+
+module.exports = {
+  authMiddleware,
+  adminMiddleware,
+  labAccessMiddleware,
+  getLabLoginHTML
+};

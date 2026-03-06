@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Simple play button - main shape -->
+  <polygon points="6,4 6,44 46,24" fill="url(#tealGrad)"/>
+  <!-- Subtle inner border -->
+  <polygon points="10,10 10,38 40,24" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.3"/>
+  <!-- Left eye - open dot -->
+  <circle cx="20" cy="20" r="3" fill="#ffffff"/>
+  <!-- Right eye - wink line -->
+  <path d="M 28 20 L 35 20" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <!-- Big friendly smile -->
+  <path d="M 18 32 Q 27 42 36 32" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

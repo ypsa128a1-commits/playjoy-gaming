@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aurazein Mindfulness - Teknik Pernapasan & Meditasi</title>
+  <meta name="description" content="Hub Mindfulness Indonesia. Latih teknik pernapasan, meditasi, dan temukan ketenangan dalam diri Anda.">
+  <meta name="keywords" content="mindfulness, meditasi, pernapasan, box breathing, relaksasi, Indonesia">
+  
+  <!-- PWA -->
+  <meta name="theme-color" content="#6B21A8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Aurazein">
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #6B21A8;
+      --primary-light: #9333EA;
+      --secondary: #3B82F6;
+      --accent: #14B8A6;
+      --bg-dark: #0F0F23;
+      --bg-card: #1E1E32;
+      --text: #FFFFFF;
+      --text-muted: #94A3B8;
+      --border: rgba(255,255,255,0.1);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #1A1A2E 50%, #16213E 100%);
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    
+    /* Background Effects */
+    .bg-effects {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-effects::before,
+    .bg-effects::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+    .bg-effects::before {
+      top: 20%;
+      left: 20%;
+      width: 300px;
+      height: 300px;
+      background: rgba(147, 51, 234, 0.15);
+      animation: float 20s infinite ease-in-out;
+    }
+    .bg-effects::after {
+      bottom: 20%;
+      right: 20%;
+      width: 400px;
+      height: 400px;
+      background: rgba(59, 130, 246, 0.1);
+      animation: float 25s infinite ease-in-out reverse;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+    
+    /* Main Container */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 1rem;
+      padding-bottom: 100px;
+    }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #A855F7, #3B82F6, #14B8A6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    /* Cards */
+    .card {
+      background: rgba(30, 30, 50, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .stat-card {
+      background: rgba(30, 30, 50, 0.5);
+      border-radius: 12px;
+      padding: 0.875rem;
+      text-align: center;
+    }
+    .stat-card .icon {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+    .stat-card .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .stat-card .label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    
+    /* Breathing Techniques Grid */
+    .techniques-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    .technique-card {
+      background: linear-gradient(135deg, rgba(107, 33, 168, 0.2), rgba(59, 130, 246, 0.2));
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .technique-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary-light);
+    }
+    .technique-card.active {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+    }
+    .technique-card .icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .technique-card .name {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    .technique-card .duration {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    /* Breathing Circle */
+    .breathing-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 0;
+    }
+    .breathing-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 60px rgba(147, 51, 234, 0.4);
+    }
+    .breathing-circle .outer-glow {
+      position: absolute;
+      inset: -30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      opacity: 0.2;
+      filter: blur(20px);
+      transition: all 0.3s ease;
+    }
+    .breathing-circle .countdown {
+      font-size: 3.5rem;
+      font-weight: 700;
+      z-index: 2;
+    }
+    .breathing-circle .phase-label {
+      background: rgba(255,255,255,0.2);
+      padding: 0.25rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      z-index: 2;
+      margin-top: 0.25rem;
+    }
+    
+    /* Progress Ring */
+    .progress-ring {
+      position: absolute;
+      inset: -5px;
+      pointer-events: none;
+    }
+    .progress-ring circle {
+      fill: none;
+      stroke: rgba(255,255,255,0.2);
+      stroke-width: 3;
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+    .progress-ring .progress {
+      stroke: rgba(255,255,255,0.8);
+      stroke-dasharray: 660;
+      stroke-dashoffset: 660;
+      transition: stroke-dashoffset 0.1s linear;
+    }
+    
+    /* Instruction */
+    .instruction {
+      text-align: center;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin: 1.5rem 0;
+      min-height: 1.5rem;
+    }
+    
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      min-width: 120px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(147, 51, 234, 0.3);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    .btn-icon {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+      margin-bottom: 1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tab {
+      flex-shrink: 0;
+      padding: 0.625rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+    
+    /* Meditation Timer */
+    .timer-display {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1E1B4B, #312E81);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem auto;
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
+    }
+    .timer-display .time {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    .timer-display .label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    
+    /* Time Buttons */
+    .time-selector {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .time-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .time-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-color: transparent;
+    }
+    
+    /* Ambient Sounds */
+    .sounds-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .sound-btn {
+      padding: 0.75rem;
+      border-radius: 12px;
+      text-align: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .sound-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-color: transparent;
+    }
+    .sound-btn .icon {
+      font-size: 1.5rem;
+    }
+    .sound-btn .name {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .sound-btn.active .name {
+      color: white;
+    }
+    
+    /* Premium Banner */
+    .premium-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 146, 60, 0.2));
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+    .premium-banner .icon {
+      font-size: 2rem;
+    }
+    .premium-banner .content h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .premium-banner .content p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 15, 35, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      padding: 0.5rem;
+      z-index: 100;
+    }
+    .nav-items {
+      display: flex;
+      justify-content: space-around;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      border-radius: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .nav-item.active {
+      color: white;
+      background: rgba(255,255,255,0.1);
+    }
+    .nav-item .icon {
+      font-size: 1.25rem;
+    }
+    .nav-item .label {
+      font-size: 0.65rem;
+      margin-top: 0.25rem;
+    }
+    
+    /* Page sections */
+    .page { display: none; }
+    .page.active { display: block; }
+    
+    /* Settings Panel */
+    .settings-panel {
+      background: rgba(30, 30, 50, 0.8);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-row label { font-size: 0.875rem; }
+    .setting-row .value { color: var(--text-muted); font-size: 0.875rem; }
+    
+    /* Slider */
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.1);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      cursor: pointer;
+    }
+    
+    /* Achievements */
+    .achievement-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+    }
+    .achievement-item .icon { font-size: 1.5rem; }
+    .achievement-item .name { font-weight: 600; font-size: 0.875rem; }
+    .achievement-item .desc { font-size: 0.75rem; color: var(--text-muted); }
+    
+    /* Hide scrollbar */
+    .tabs::-webkit-scrollbar { display: none; }
+    .tabs { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="bg-effects"></div>
+  
+  <!-- App Container -->
+  <div class="app-container">
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <div class="header">
+        <h1>🧘 Aurazein Mindfulness</h1>
+        <p>Temukan ketenangan dalam diri Anda</p>
+      </div>
+      
+      <!-- Quote -->
+      <div class="card" style="background: linear-gradient(135deg, rgba(107, 33, 168, 0.2), rgba(59, 130, 246, 0.2));">
+        <p style="font-style: italic; font-size: 0.9rem; color: #E2E8F0;">
+          "Ketenangan bukan berarti tidak ada masalah, tapi mampu menghadapinya dengan hati yang tenang."
+        </p>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">— Kutipan Hari Ini</p>
+      </div>
+      
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="icon">🔥</div>
+          <div class="value" id="streak">0</div>
+          <div class="label">Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">⏱️</div>
+          <div class="value" id="minutes">0</div>
+          <div class="label">Menit</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">🎯</div>
+          <div class="value" id="sessions">0</div>
+          <div class="label">Sesi</div>
+        </div>
+      </div>
+      
+      <!-- Quick Start -->
+      <h2 style="font-size: 1rem; margin: 1.5rem 0 0.75rem;">Mulai Cepat</h2>
+      <div class="card" style="cursor: pointer;" onclick="startQuickSession()">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3B82F6, #06B6D4); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📦</div>
+            <div>
+              <p style="font-weight: 600;">Box Breathing</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">4-4-4-4 • 5 menit</p>
+            </div>
+          </div>
+          <div style="font-size: 1.5rem;">▶️</div>
+        </div>
+      </div>
+      
+      <!-- Breathing Techniques -->
+      <h2 style="font-size: 1rem; margin: 1.5rem 0 0.75rem;">Teknik Pernapasan</h2>
+      <div class="techniques-grid">
+        <div class="technique-card" onclick="selectTechnique(0)">
+          <div class="icon">📦</div>
+          <div class="name">Box Breathing</div>
+          <div class="duration">Pemula</div>
+        </div>
+        <div class="technique-card" onclick="selectTechnique(1)">
+          <div class="icon">🌙</div>
+          <div class="name">4-7-8 Sleep</div>
+          <div class="duration">Menengah</div>
+        </div>
+        <div class="technique-card" onclick="selectTechnique(2)">
+          <div class="icon">🫁</div>
+          <div class="name">Deep Belly</div>
+          <div class="duration">Pemula</div>
+        </div>
+        <div class="technique-card" onclick="selectTechnique(3)">
+          <div class="icon">⚖️</div>
+          <div class="name">Coherent</div>
+          <div class="duration">Pemula</div>
+        </div>
+      </div>
+      
+      <!-- Premium Banner -->
+      <div class="premium-banner" style="margin-top: 1.5rem;">
+        <div class="icon">👑</div>
+        <div class="content">
+          <h3>Upgrade ke Premium</h3>
+          <p>Akses semua fitur & konten eksklusif</p>
+        </div>
+        <div style="margin-left: auto;">→</div>
+      </div>
+    </div>
+    
+    <!-- BREATHE PAGE -->
+    <div id="page-breathe" class="page">
+      <div class="tabs">
+        <button class="tab active" onclick="selectTechnique(0)">📦 Box</button>
+        <button class="tab" onclick="selectTechnique(1)">🌙 4-7-8</button>
+        <button class="tab" onclick="selectTechnique(2)">🫁 Deep</button>
+        <button class="tab" onclick="selectTechnique(3)">⚖️ Coherent</button>
+        <button class="tab" onclick="selectTechnique(4)">⚡ Energy</button>
+        <button class="tab" onclick="selectTechnique(5)">🍃 Calm</button>
+      </div>
+      
+      <div class="breathing-container">
+        <div class="breathing-circle" id="breathCircle">
+          <div class="outer-glow"></div>
+          <svg class="progress-ring" viewBox="0 0 220 220">
+            <circle cx="110" cy="110" r="105"/>
+            <circle class="progress" id="progressCircle" cx="110" cy="110" r="105"/>
+          </svg>
+          <span class="countdown" id="countdown">4</span>
+          <span class="phase-label" id="phaseLabel">Siap</span>
+        </div>
+      </div>
+      
+      <p class="instruction" id="instruction">Tekan Mulai untuk memulai</p>
+      
+      <div class="btn-group">
+        <button class="btn btn-primary" id="mainBtn" onclick="toggleBreathing()">
+          <span>▶️</span> Mulai
+        </button>
+        <button class="btn btn-secondary btn-icon" onclick="resetBreathing()">↺</button>
+        <button class="btn btn-secondary btn-icon" id="soundBtn" onclick="toggleSound()">🔊</button>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="value" id="cycleCount">0</div>
+          <div class="label">Siklus</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="breathCount">0</div>
+          <div class="label">Napas</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="totalSeconds">0</div>
+          <div class="label">Detik</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem;" id="techName">Box Breathing</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted);" id="techDesc">Teknik 4-4-4-4 untuk ketenangan dan fokus</p>
+      </div>
+    </div>
+    
+    <!-- MEDITATE PAGE -->
+    <div id="page-meditate" class="page">
+      <h1 style="text-align: center; font-size: 1.5rem; margin-bottom: 1rem;">Meditasi Timer</h1>
+      
+      <div class="timer-display">
+        <span class="time" id="timerDisplay">5:00</span>
+        <span class="label" id="timerLabel">Siap memulai</span>
+      </div>
+      
+      <div class="time-selector" id="timeSelector">
+        <button class="time-btn" onclick="setTime(3)">3 min</button>
+        <button class="time-btn active" onclick="setTime(5)">5 min</button>
+        <button class="time-btn" onclick="setTime(10)">10 min</button>
+        <button class="time-btn" onclick="setTime(15)">15 min</button>
+        <button class="time-btn" onclick="setTime(20)">20 min</button>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-primary" id="medBtn" onclick="toggleMeditation()">
+          <span>▶️</span> Mulai
+        </button>
+        <button class="btn btn-secondary btn-icon" onclick="resetMeditation()">↺</button>
+      </div>
+      
+      <div class="card">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Suara Latar</h3>
+        <div class="sounds-grid">
+          <div class="sound-btn active" onclick="selectSound(0)">
+            <div class="icon">🌧️</div>
+            <div class="name">Hujan</div>
+          </div>
+          <div class="sound-btn" onclick="selectSound(1)">
+            <div class="icon">🌊</div>
+            <div class="name">Ombak</div>
+          </div>
+          <div class="sound-btn" onclick="selectSound(2)">
+            <div class="icon">🐦</div>
+            <div class="name">Hutan</div>
+          </div>
+          <div class="sound-btn" onclick="selectSound(3)">
+            <div class="icon">🔥</div>
+            <div class="name">Api</div>
+          </div>
+          <div class="sound-btn" onclick="selectSound(4)">
+            <div class="icon">🍃</div>
+            <div class="name">Angin</div>
+          </div>
+          <div class="sound-btn" onclick="selectSound(5)">
+            <div class="icon">🌙</div>
+            <div class="name">Hening</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Tips Meditasi</h3>
+        <ul style="font-size: 0.8rem; color: var(--text-muted); padding-left: 1.25rem;">
+          <li>Carilah tempat yang tenang dan nyaman</li>
+          <li>Duduk dengan posisi yang santai</li>
+          <li>Fokus pada napas Anda</li>
+          <li>Jangan menghakimi pikiran yang muncul</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- STATS PAGE -->
+    <div id="page-stats" class="page">
+      <h1 style="text-align: center; font-size: 1.5rem; margin-bottom: 1rem;">Statistik</h1>
+      
+      <div class="card" style="background: linear-gradient(135deg, rgba(107, 33, 168, 0.2), rgba(59, 130, 246, 0.2));">
+        <h3 style="font-size: 0.9rem; margin-bottom: 1rem;">Minggu Ini</h3>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; text-align: center;">
+          <div><div style="font-size: 0.6rem; color: var(--text-muted);">S</div><div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); margin: 0.25rem auto; display: flex; align-items: center; justify-content: center;">✓</div></div>
+          <div><div style="font-size: 0.6rem; color: var(--text-muted);">S</div><div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); margin: 0.25rem auto; display: flex; align-items: center; justify-content: center;">✓</div></div>
+          <div><div style="font-size: 0.6rem; color: var(--text-muted);">R</div><div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); margin: 0.25rem auto; display: flex; align-items: center; justify-content: center;">✓</div></div>
+          <div><div style="font-size: 0.6rem; color: var(--text-muted);">K</div><div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); margin: 0.25rem auto; display: flex; align-items: center; justify-content: center;">✓</div></div>
+          <div><div style="font-size: 0.6rem; color: var(--text-muted);">J</div><div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.1); margin: 0.25rem auto;"></div></div>
+          <div><div style="font-size: 0.6rem; color: var(--text-muted);">S</div><div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.1); margin: 0.25rem auto;"></div></div>
+          <div><div style="font-size: 0.6rem; color: var(--text-muted);">M</div><div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.1); margin: 0.25rem auto;"></div></div>
+        </div>
+      </div>
+      
+      <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="stat-card">
+          <div class="icon">🔥</div>
+          <div class="value">4</div>
+          <div class="label">Hari Berturut</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">⏱️</div>
+          <div class="value">45</div>
+          <div class="label">Menit Total</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">🎯</div>
+          <div class="value">12</div>
+          <div class="label">Total Sesi</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">🏆</div>
+          <div class="value">5</div>
+          <div class="label">Pencapaian</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Pencapaian Terbaru</h3>
+        <div class="achievement-item">
+          <div class="icon">🌟</div>
+          <div>
+            <div class="name">Langkah Pertama</div>
+            <div class="desc">Selesaikan sesi pertama</div>
+          </div>
+        </div>
+        <div class="achievement-item">
+          <div class="icon">🔥</div>
+          <div>
+            <div class="name">Api Membara</div>
+            <div class="desc">Streak 3 hari berturut</div>
+          </div>
+        </div>
+        <div class="achievement-item">
+          <div class="icon">🧘</div>
+          <div>
+            <div class="name">Yogi Pemula</div>
+            <div class="desc">Total 10 sesi meditasi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page">
+      <div style="text-align: center; padding: 1rem 0;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #EC4899); margin: 0 auto 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">🧘</div>
+        <h1 style="font-size: 1.25rem;">Pengguna</h1>
+        <p style="color: var(--text-muted); font-size: 0.875rem;">Level Pemula</p>
+      </div>
+      
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Progress ke Level Berikutnya</span>
+          <span style="font-size: 0.8rem;">65%</span>
+        </div>
+        <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+          <div style="width: 65%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary));"></div>
+        </div>
+        <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem;">35 menit lagi untuk Level Menengah</p>
+      </div>
+      
+      <div class="card" style="padding: 0;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border-bottom: 1px solid var(--border);">
+          <span>👑</span>
+          <div style="flex: 1;">
+            <p style="font-weight: 500;">Premium</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Akses semua fitur</p>
+          </div>
+          <span style="color: var(--text-muted);">→</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border-bottom: 1px solid var(--border);">
+          <span>🔔</span>
+          <div style="flex: 1;">
+            <p style="font-weight: 500;">Pengingat</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Atur notifikasi harian</p>
+          </div>
+          <span style="color: var(--text-muted);">→</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border-bottom: 1px solid var(--border);">
+          <span>🌙</span>
+          <div style="flex: 1;">
+            <p style="font-weight: 500;">Tema</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Mode gelap</p>
+          </div>
+          <span style="color: var(--text-muted);">Aktif</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem;">
+          <span>🎁</span>
+          <div style="flex: 1;">
+            <p style="font-weight: 500;">Undang Teman</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Dapat 7 hari gratis</p>
+          </div>
+          <span style="color: var(--text-muted);">→</span>
+        </div>
+      </div>
+      
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.7rem; margin-top: 1.5rem;">
+        Aurazein Mindfulness v1.0.0<br>© 2024 Aurazein
+      </p>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-items">
+      <div class="nav-item active" onclick="showPage('home')">
+        <span class="icon">🏠</span>
+        <span class="label">Beranda</span>
+      </div>
+      <div class="nav-item" onclick="showPage('breathe')">
+        <span class="icon">🌬️</span>
+        <span class="label">Napas</span>
+      </div>
+      <div class="nav-item" onclick="showPage('meditate')">
+        <span class="icon">🧘</span>
+        <span class="label">Meditasi</span>
+      </div>
+      <div class="nav-item" onclick="showPage('stats')">
+        <span class="icon">📊</span>
+        <span class="label">Stats</span>
+      </div>
+      <div class="nav-item" onclick="showPage('profile')">
+        <span class="icon">👤</span>
+        <span class="label">Profil</span>
+      </div>
+    </div>
+  </nav>
+  
+  <script>
+    // Breathing Techniques Configuration
+    const TECHNIQUES = [
+      { name: 'Box Breathing', desc: 'Teknik 4-4-4-4 untuk ketenangan dan fokus', pattern: { inhale: 4, holdIn: 4, exhale: 4, holdOut: 4 } },
+      { name: '4-7-8 Breathing', desc: 'Teknik relaksasi untuk tidur lebih cepat', pattern: { inhale: 4, holdIn: 7, exhale: 8, holdOut: 0 } },
+      { name: 'Deep Belly', desc: 'Pernapasan diafragma untuk relaksasi', pattern: { inhale: 6, holdIn: 2, exhale: 6, holdOut: 0 } },
+      { name: 'Coherent', desc: 'Pernapasan seimbang 5-5', pattern: { inhale: 5, holdIn: 0, exhale: 5, holdOut: 0 } },
+      { name: 'Energizing', desc: 'Teknik kapalabhati untuk energi', pattern: { inhale: 2, holdIn: 0, exhale: 1, holdOut: 0 } },
+      { name: 'Calming', desc: 'Pernapasan panjang untuk ketenangan', pattern: { inhale: 4, holdIn: 1, exhale: 8, holdOut: 0 } }
+    ];
+    
+    const PHASES = {
+      inhale: { label: 'Tarik Napas', instruction: 'Tarik napas perlahan...' },
+      holdIn: { label: 'Tahan', instruction: 'Tahan napas...' },
+      exhale: { label: 'Hembuskan', instruction: 'Hembuskan perlahan...' },
+      holdOut: { label: 'Tahan', instruction: 'Tahan kosong...' },
+      idle: { label: 'Siap', instruction: 'Tekan Mulai untuk memulai' }
+    };
+    
+    // State
+    let currentTechnique = 0;
+    let isActive = false;
+    let phase = 'idle';
+    let countdown = 4;
+    let cycles = 0;
+    let breaths = 0;
+    let totalSecs = 0;
+    let soundEnabled = true;
+    let interval = null;
+    let circleSize = 200;
+    
+    let meditationTime = 5;
+    let meditationRemaining = 300;
+    let meditationActive = false;
+    let meditationInterval = null;
+    
+    // Audio Context
+    let audioCtx = null;
+    
+    function playSound(freq = 440, duration = 150) {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration / 1000);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + duration / 1000);
+      } catch(e) {}
+    }
+    
+    // Navigation
+    function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach((n, i) => {
+        n.classList.toggle('active', ['home', 'breathe', 'meditate', 'stats', 'profile'][i] === name);
+      });
+    }
+    
+    // Breathing
+    function selectTechnique(idx) {
+      currentTechnique = idx;
+      const tech = TECHNIQUES[idx];
+      document.getElementById('techName').textContent = tech.name;
+      document.getElementById('techDesc').textContent = tech.desc;
+      
+      // Update tabs
+      document.querySelectorAll('.tabs .tab').forEach((t, i) => {
+        t.classList.toggle('active', i === idx);
+      });
+      
+      resetBreathing();
+      showPage('breathe');
+    }
+    
+    function getPattern() {
+      return TECHNIQUES[currentTechnique].pattern;
+    }
+    
+    function getPhaseDuration(p) {
+      const pattern = getPattern();
+      return pattern[p] || 4;
+    }
+    
+    function updateDisplay() {
+      const circle = document.getElementById('breathCircle');
+      const countdownEl = document.getElementById('countdown');
+      const phaseLabel = document.getElementById('phaseLabel');
+      const instruction = document.getElementById('instruction');
+      const progressCircle = document.getElementById('progressCircle');
+      
+      countdownEl.textContent = phase === 'idle' ? getPattern().inhale : Math.ceil(countdown);
+      phaseLabel.textContent = PHASES[phase].label;
+      instruction.textContent = PHASES[phase].instruction;
+      
+      // Progress ring
+      const duration = getPhaseDuration(phase);
+      const progressPercent = duration > 0 ? ((duration - countdown) / duration) * 100 : 0;
+      progressCircle.style.strokeDashoffset = 660 - (progressPercent / 100) * 660;
+      
+      // Animate size
+      circle.style.width = circleSize + 'px';
+      circle.style.height = circleSize + 'px';
+      
+      // Update stats
+      document.getElementById('cycleCount').textContent = cycles;
+      document.getElementById('breathCount').textContent = breaths;
+      document.getElementById('totalSeconds').textContent = totalSecs;
+    }
+    
+    function startBreathing() {
+      if (interval) return;
+      
+      interval = setInterval(() => {
+        if (phase === 'idle') return;
+        
+        const duration = getPhaseDuration(phase);
+        if (duration === 0) {
+          nextPhase();
+          return;
+        }
+        
+        countdown -= 0.1;
+        totalSecs = Math.floor(cycles * 16 + (16 - countdown));
+        
+        // Animate
+        const progressPercent = ((duration - countdown) / duration) * 100;
+        if (phase === 'inhale') circleSize = 200 + progressPercent;
+        else if (phase === 'exhale') circleSize = 300 - progressPercent;
+        
+        updateDisplay();
+        
+        if (countdown <= 0) {
+          playSound(phase === 'inhale' || phase === 'exhale' ? 523.25 : 440);
+          nextPhase();
+        }
+      }, 100);
+    }
+    
+    function nextPhase() {
+      const phaseOrder = ['inhale', 'holdIn', 'exhale', 'holdOut'];
+      const currentIdx = phaseOrder.indexOf(phase);
+      let nextIdx = (currentIdx + 1) % phaseOrder.length;
+      let nextPhase = phaseOrder[nextIdx];
+      
+      // Skip zero duration phases
+      while (getPhaseDuration(nextPhase) === 0 && nextIdx !== currentIdx) {
+        nextIdx = (nextIdx + 1) % phaseOrder.length;
+        nextPhase = phaseOrder[nextIdx];
+      }
+      
+      if (nextPhase === 'holdOut' || (nextPhase === 'inhale' && getPhaseDuration('holdOut') === 0)) {
+        breaths++;
+      }
+      if (nextPhase === 'inhale') {
+        cycles++;
+      }
+      
+      phase = nextPhase;
+      countdown = getPhaseDuration(phase);
+      updateDisplay();
+    }
+    
+    function toggleBreathing() {
+      const btn = document.getElementById('mainBtn');
+      if (!isActive) {
+        if (phase === 'idle') {
+          phase = 'inhale';
+          countdown = getPattern().inhale;
+        }
+        isActive = true;
+        btn.innerHTML = '<span>⏸️</span> Jeda';
+        playSound(659.25, 200);
+        startBreathing();
+      } else {
+        isActive = false;
+        btn.innerHTML = '<span>▶️</span> Mulai';
+        playSound(329.63, 200);
+      }
+      updateDisplay();
+    }
+    
+    function resetBreathing() {
+      isActive = false;
+      phase = 'idle';
+      countdown = getPattern().inhale;
+      cycles = 0;
+      breaths = 0;
+      totalSecs = 0;
+      circleSize = 200;
+      if (interval) { clearInterval(interval); interval = null; }
+      document.getElementById('mainBtn').innerHTML = '<span>▶️</span> Mulai';
+      updateDisplay();
+      playSound(261.63, 300);
+    }
+    
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+    }
+    
+    function startQuickSession() {
+      currentTechnique = 0;
+      resetBreathing();
+      showPage('breathe');
+      setTimeout(toggleBreathing, 500);
+    }
+    
+    // Meditation
+    function setTime(mins) {
+      meditationTime = mins;
+      meditationRemaining = mins * 60;
+      updateTimerDisplay();
+      document.querySelectorAll('.time-btn').forEach((b, i) => {
+        b.classList.toggle('active', [3, 5, 10, 15, 20][i] === mins);
+      });
+    }
+    
+    function updateTimerDisplay() {
+      const mins = Math.floor(meditationRemaining / 60);
+      const secs = meditationRemaining % 60;
+      document.getElementById('timerDisplay').textContent = mins + ':' + secs.toString().padStart(2, '0');
+      document.getElementById('timerLabel').textContent = meditationActive ? 'Meditasi...' : 'Siap memulai';
+    }
+    
+    function toggleMeditation() {
+      const btn = document.getElementById('medBtn');
+      if (!meditationActive) {
+        meditationActive = true;
+        btn.innerHTML = '<span>⏸️</span> Jeda';
+        playSound(523.25, 300);
+        meditationInterval = setInterval(() => {
+          meditationRemaining--;
+          updateTimerDisplay();
+          if (meditationRemaining <= 0) {
+            meditationActive = false;
+            playSound(659.25, 500);
+            btn.innerHTML = '<span>▶️</span> Mulai';
+            clearInterval(meditationInterval);
+            alert('🎉 Sesi meditasi selesai!');
+          }
+        }, 1000);
+      } else {
+        meditationActive = false;
+        btn.innerHTML = '<span>▶️</span> Mulai';
+        clearInterval(meditationInterval);
+      }
+      updateTimerDisplay();
+    }
+    
+    function resetMeditation() {
+      meditationActive = false;
+      meditationRemaining = meditationTime * 60;
+      clearInterval(meditationInterval);
+      document.getElementById('medBtn').innerHTML = '<span>▶️</span> Mulai';
+      updateTimerDisplay();
+    }
+    
+    function selectSound(idx) {
+      document.querySelectorAll('.sound-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === idx);
+      });
+    }
+    
+    // Initialize
+    updateDisplay();
+    updateTimerDisplay();
+  </script>
+</body>
+</html>

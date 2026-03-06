@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded triangle - unique blob shape -->
+  <path d="M 24 4 Q 44 4 44 24 Q 44 44 24 44 Q 4 44 4 24 Q 4 4 24 4" fill="url(#tealGrad)"/>
+  <!-- Diagonal play suggestion -->
+  <rect x="18" y="10" width="6" height="28" rx="2" fill="#ffffff"/>
+  <rect x="18" y="32" width="20" height="6" rx="2" fill="#ffffff"/>
+  <!-- Face -->
+  <circle cx="30" cy="18" r="2" fill="url(#tealGrad)"/>
+  <circle cx="38" cy="18" r="2" fill="url(#tealGrad)"/>
+  <path d="M 28 26 Q 34 30 40 26" fill="none" stroke="url(#tealGrad)" stroke-width="2" stroke-linecap="round"/>
+</svg>

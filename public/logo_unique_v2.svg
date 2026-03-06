@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square with bite/play cutout -->
+  <path d="M 4 8 Q 4 4 8 4 L 40 4 Q 44 4 44 8 L 44 24 L 44 40 Q 44 44 40 44 L 8 44 Q 4 44 4 40 Z" fill="url(#tealGrad)"/>
+  <!-- Play triangle cutout -->
+  <polygon points="44,8 44,40 22,24" fill="#ffffff"/>
+  <!-- Face on white play -->
+  <circle cx="34" cy="20" r="2" fill="url(#tealGrad)"/>
+  <path d="M 32 28 Q 36 32 40 28" fill="none" stroke="url(#tealGrad)" stroke-width="2" stroke-linecap="round"/>
+</svg>

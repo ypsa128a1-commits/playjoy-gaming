@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Robot Head -->
+  <rect x="6" y="6" width="36" height="36" rx="10" ry="10" fill="url(#tealGrad)"/>
+  
+  <!-- Left Eye -->
+  <circle cx="16" cy="18" r="4" fill="#ffffff"/>
+  <circle cx="16" cy="18" r="2" fill="#1a1a2e"/>
+  
+  <!-- Right Eye -->
+  <circle cx="32" cy="18" r="4" fill="#ffffff"/>
+  <circle cx="32" cy="18" r="2" fill="#1a1a2e"/>
+  
+  <!-- Play button as nose/mouth area -->
+  <polygon points="19,26 19,37 30,31.5" fill="url(#amberGrad)"/>
+  
+  <!-- Small smile line under play -->
+  <path d="M 17 38 Q 24 42 31 38" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+</svg>

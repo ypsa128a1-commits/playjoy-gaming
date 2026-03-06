@@ -1,0 +1,157 @@
+/**
+ * Lab Controller
+ * Handles lab access and deploy endpoints
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+const Setting = require('../models/Setting');
+
+const DEFAULT_LAB_PASSWORD = 'aurazein1997';
+const BACKUP_DIR = path.join(process.cwd(), 'backups');
+const CHANGELOG_FILE = path.join(process.cwd(), 'changelog.json');
+
+// Ensure backup directory exists
+if (!fs.existsSync(BACKUP_DIR)) {
+  fs.mkdirSync(BACKUP_DIR, { recursive: true });
+}
+
+/**
+ * Get lab password from settings or default
+ */
+async function getLabPassword() {
+  try {
+    const password = await Setting.get('lab_password');
+    return password || DEFAULT_LAB_PASSWORD;
+  } catch (err) {
+    return DEFAULT_LAB_PASSWORD;
+  }
+}
+
+/**
+ * Verify lab password
+ */
+async function verifyLabPassword(req, res) {
+  try {
+    const { password } = req.body;
+    const labPassword = await getLabPassword();
+
+    if (password === labPassword) {
+      res.cookie('lab_access', 'granted', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+      res.json({ success: true, message: 'Access granted' });
+    } else {
+      res.status(401).json({ success: false, message: 'Invalid password' });
+    }
+  } catch (err) {
+    console.error('LAB VERIFY ERROR:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
+
+/**
+ * Lab logout
+ */
+function labLogout(req, res) {
+  res.clearCookie('lab_access');
+  res.json({ success: true, message: 'Logged out from lab' });
+}
+
+/**
+ * Change lab password (admin only)
+ */
+async function changeLabPassword(req, res) {
+  try {
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password minimal 6 karakter'
+      });
+    }
+
+    await Setting.set('lab_password', password);
+    res.json({ success: true, message: 'Lab password berhasil diubah' });
+  } catch (err) {
+    console.error('CHANGE LAB PASSWORD ERROR:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Gagal mengubah lab password'
+    });
+  }
+}
+
+/**
+ * Get lab status (admin only)
+ */
+async function getLabStatus(req, res) {
+  try {
+    const password = await getLabPassword();
+    res.json({
+      success: true,
+      hasCustomPassword: password !== DEFAULT_LAB_PASSWORD,
+      passwordLength: password.length
+    });
+  } catch (err) {
+    res.json({ success: true, hasCustomPassword: false });
+  }
+}
+
+/**
+ * Get deploy changelog (admin only)
+ */
+async function getDeployChangelog(req, res) {
+  try {
+    if (fs.existsSync(CHANGELOG_FILE)) {
+      const changelog = JSON.parse(fs.readFileSync(CHANGELOG_FILE, 'utf8'));
+      res.json({ success: true, changelog });
+    } else {
+      res.json({ success: true, changelog: [] });
+    }
+  } catch (err) {
+    console.error('GET CHANGELOG ERROR:', err);
+    res.json({ success: true, changelog: [] });
+  }
+}
+
+/**
+ * Rollback deployment (admin only)
+ */
+async function rollback(req, res) {
+  try {
+    res.json({ success: true, message: 'Rollback feature coming soon' });
+  } catch (err) {
+    console.error('ROLLBACK ERROR:', err);
+    res.status(500).json({ success: false, message: 'Rollback failed' });
+  }
+}
+
+/**
+ * Deploy to production (admin only)
+ */
+async function deployToProduction(req, res) {
+  try {
+    res.json({ success: true, message: 'Deploy feature coming soon' });
+  } catch (err) {
+    console.error('DEPLOY ERROR:', err);
+    res.status(500).json({ success: false, message: 'Deploy failed' });
+  }
+}
+
+module.exports = {
+  verifyLabPassword,
+  labLogout,
+  changeLabPassword,
+  getLabStatus,
+  getDeployChangelog,
+  rollback,
+  deployToProduction
+};
+

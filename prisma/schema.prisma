@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String?   @unique
+  username  String?   @unique
+  password  String
+  name      String?
+  role      String    @default("user")
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Game {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  description String?   @db.Text
+  category    String?   @db.VarChar(100)
+  thumbnail   String?   @db.VarChar(255)
+  iframeUrl   String?   @db.LongText @map("iframe_url")
+  featured    Boolean   @default(false)
+  views       Int       @default(0)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  isActive    Boolean   @default(true) @map("is_active")
+  isFeatured  Boolean   @default(false) @map("is_featured")
+  playCount   Int       @default(0) @map("play_count")
+
+  @@index([category])
+  @@index([featured])
+  @@index([views])
+  @@map("games")
+}
+
+model Setting {
+  key   String  @id
+  value String? @db.Text
+
+  @@map("settings")
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sessions")
+}
+
+model GameTraffic {
+  id        Int      @id @default(autoincrement())
+  gameId    Int      @map("game_id")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("game_traffic")
+}
+
+model GmLink {
+  id        Int      @id @default(autoincrement())
+  title     String?
+  url       String?
+  gameId    Int?     @map("game_id")
+  type      String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("gm_links")
+}
+
+model GmMedium {
+  id        Int      @id @default(autoincrement())
+  title     String?
+  type      String?
+  url       String?
+  gameId    Int?     @map("game_id")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("gm_media")
+}
+
+model GmSetting {
+  id        Int      @id @default(autoincrement())
+  key       String?
+  value     String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("gm_setting")
+}
+
+model GmSidebar {
+  id        Int      @id @default(autoincrement())
+  title     String?
+  content   String?  @db.Text
+  position  String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("gm_sidebar")
+}
+
+model GmSlider {
+  id        Int      @id @default(autoincrement())
+  title     String?
+  imageUrl  String?  @map("image_url")
+  link      String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("gm_sliders")
+}
+
+model GmTag {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  slug      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("gm_tags")
+}

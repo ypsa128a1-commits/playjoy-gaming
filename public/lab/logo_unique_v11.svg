@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Speech bubble shape -->
+  <path d="M 8 4 L 40 4 Q 46 4 46 10 L 46 30 Q 46 36 40 36 L 16 36 L 8 46 L 8 36 Q 2 36 2 30 L 2 10 Q 2 4 8 4" fill="url(#tealGrad)"/>
+  <!-- Play button inside -->
+  <polygon points="14,12 14,28 32,20" fill="#ffffff"/>
+  <!-- Wink face -->
+  <circle cx="22" cy="26" r="2" fill="url(#tealGrad)"/>
+  <path d="M 27 26 L 32 26" stroke="url(#tealGrad)" stroke-width="2" stroke-linecap="round"/>
+</svg>

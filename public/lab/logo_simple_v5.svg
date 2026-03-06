@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square head -->
+  <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#tealGrad)"/>
+  <!-- Simple dot eyes -->
+  <circle cx="16" cy="18" r="4" fill="#ffffff"/>
+  <circle cx="32" cy="18" r="4" fill="#ffffff"/>
+  <!-- Play button as mouth -->
+  <polygon points="17,26 17,38 29,32" fill="url(#amberGrad)"/>
+</svg>

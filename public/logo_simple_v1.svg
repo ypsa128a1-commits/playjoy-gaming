@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Simple robot head - rounded square -->
+  <rect x="6" y="6" width="36" height="36" rx="10" fill="url(#tealGrad)"/>
+  <!-- Two simple dot eyes -->
+  <circle cx="17" cy="20" r="4" fill="#ffffff"/>
+  <circle cx="31" cy="20" r="4" fill="#ffffff"/>
+  <!-- Simple curved smile -->
+  <path d="M 17 30 Q 24 37 31 30" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+</svg>

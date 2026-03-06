@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurazein Mindfulness - Box Breathing</title>
+    <meta name="description" content="Latih teknik pernapasan Box Breathing untuk relaksasi dan fokus. Gratis dan mudah digunakan.">
+    <meta name="keywords" content="box breathing, meditation, mindfulness, pernapasan, relaksasi, aurazein">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Aurazein Mindfulness - Box Breathing">
+    <meta property="og:description" content="Latih teknik pernapasan Box Breathing untuk relaksasi dan fokus.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aurazein.my.id/mindfulness/">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 20s infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #a0a0c0;
+            font-size: 1.1rem;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Breathing card */
+        .breathing-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Breathing box container */
+        .box-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Outer glow */
+        .outer-glow {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 20px;
+            background: var(--phase-color, linear-gradient(135deg, #3b82f6, #06b6d4));
+            opacity: 0.3;
+            filter: blur(30px);
+            transition: all 0.3s ease;
+        }
+        
+        /* Main breathing box */
+        .breathing-box {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            border-radius: 16px;
+            background: var(--phase-color, linear-gradient(135deg, #3b82f6, #06b6d4));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Progress ring */
+        .progress-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+        }
+        
+        .progress-ring circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 3;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+        
+        .progress-ring .progress {
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-dasharray: 628;
+            stroke-dashoffset: 628;
+        }
+        
+        /* Countdown */
+        .countdown {
+            font-size: 4rem;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .phase-label {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Corner decorations */
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #00d4ff;
+            opacity: 0.6;
+        }
+        
+        .corner-tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; border-radius: 8px 0 0 0; }
+        .corner-tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; border-radius: 0 8px 0 0; }
+        .corner-bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; border-radius: 0 0 0 8px; }
+        .corner-br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; border-radius: 0 0 8px 0; }
+        
+        /* Instruction */
+        .instruction {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #c0c0e0;
+            margin-bottom: 2rem;
+            min-height: 2rem;
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            color: white;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+        
+        .btn-primary.paused {
+            background: linear-gradient(135deg, #f97316, #ef4444);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-icon {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            justify-content: center;
+        }
+        
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #a0a0c0;
+            margin-top: 0.2rem;
+        }
+        
+        /* Settings */
+        .settings-toggle {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #a0a0c0;
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            transition: color 0.3s;
+        }
+        
+        .settings-toggle:hover {
+            color: #fff;
+        }
+        
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-panel.active {
+            display: block;
+        }
+        
+        .setting-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .setting-label {
+            font-weight: 500;
+        }
+        
+        .setting-value {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .setting-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .setting-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00d4ff;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        .setting-slider:disabled {
+            opacity: 0.5;
+        }
+        
+        /* Info section */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .info-card p {
+            color: #b0b0d0;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+        
+        .info-card p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-card strong {
+            color: #fff;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #606080;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .box-container {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .breathing-box {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .countdown {
+                font-size: 3rem;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.5rem;
+            }
+            
+            .stat-card {
+                padding: 0.8rem;
+            }
+            
+            .stat-value {
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* Phase colors */
+        .phase-inhale {
+            --phase-color: linear-gradient(135deg, #3b82f6, #06b6d4);
+        }
+        
+        .phase-holdIn {
+            --phase-color: linear-gradient(135deg, #06b6d4, #14b8a6);
+        }
+        
+        .phase-exhale {
+            --phase-color: linear-gradient(135deg, #14b8a6, #22c55e);
+        }
+        
+        .phase-holdOut {
+            --phase-color: linear-gradient(135deg, #22c55e, #3b82f6);
+        }
+        
+        .phase-idle {
+            --phase-color: linear-gradient(135deg, #475569, #64748b);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <div class="bg-particles" id="particles"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🧘</div>
+            <h1>Aurazein Mindfulness</h1>
+        </div>
+        <p class="subtitle">Teknik Pernapasan untuk Relaksasi & Fokus</p>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container">
+        <div class="breathing-card">
+            <!-- Breathing Box -->
+            <div class="box-container">
+                <div class="outer-glow" id="outerGlow"></div>
+                <div class="breathing-box phase-idle" id="breathingBox">
+                    <svg class="progress-ring" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="95" />
+                        <circle class="progress" cx="100" cy="100" r="95" id="progressCircle" />
+                    </svg>
+                    <span class="countdown" id="countdown">4</span>
+                    <span class="phase-label" id="phaseLabel">Siap</span>
+                </div>
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+            </div>
+            
+            <!-- Instruction -->
+            <p class="instruction" id="instruction">Tekan Mulai untuk memulai sesi pernapasan</p>
+            
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-primary" id="mainBtn" onclick="toggleBreathing()">
+                    <span id="mainBtnIcon">▶</span>
+                    <span id="mainBtnText">Mulai</span>
+                </button>
+                <button class="btn btn-secondary btn-icon" onclick="resetBreathing()" title="Reset">↺</button>
+                <button class="btn btn-secondary btn-icon" id="soundBtn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value" id="cycleCount">0</div>
+                    <div class="stat-label">Siklus</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🌬️</div>
+                    <div class="stat-value" id="breathCount">0</div>
+                    <div class="stat-label">Napas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-value" id="totalTime">0</div>
+                    <div class="stat-label">Detik</div>
+                </div>
+            </div>
+            
+            <!-- Settings Toggle -->
+            <button class="settings-toggle" onclick="toggleSettings()">
+                <span>⚙️</span>
+                <span id="settingsToggleText">Tampilkan Pengaturan</span>
+            </button>
+            
+            <!-- Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <div class="setting-item">
+                    <div class="setting-header">
+                        <span class="setting-label">🔵 Tarik Napas</span>
+                        <span class="setting-value" id="inhaleValue">4s</span>
+                    </div>
+                    <input type="range" class="setting-slider" id="inhaleSlider" min="2" max="8" value="4" oninput="updateSetting('inhale', this.value)">
+                </div>
+                <div class="setting-item">
+                    <div class="setting-header">
+                        <span class="setting-label">🔷 Tahan (penuh)</span>
+                        <span class="setting-value" id="holdValue">4s</span>
+                    </div>
+                    <input type="range" class="setting-slider" id="holdSlider" min="2" max="8" value="4" oninput="updateSetting('inhale', this.value)">
+                </div>
+                <div class="setting-item">
+                    <div class="setting-header">
+                        <span class="setting-label">🟢 Hembuskan</span>
+                        <span class="setting-value" id="exhaleValue">4s</span>
+                    </div>
+                    <input type="range" class="setting-slider" id="exhaleSlider" min="2" max="8" value="4" oninput="updateSetting('exhale', this.value)">
+                </div>
+                <div class="setting-item">
+                    <div class="setting-header">
+                        <span class="setting-label">🟩 Tahan (kosong)</span>
+                        <span class="setting-value" id="holdOutValue">4s</span>
+                    </div>
+                    <input type="range" class="setting-slider" id="holdOutSlider" min="2" max="8" value="4" oninput="updateSetting('holdOut', this.value)">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Card -->
+        <div class="info-card">
+            <h3>💚 Tentang Box Breathing</h3>
+            <p>
+                <strong>Box Breathing</strong> adalah teknik pernapasan yang digunakan oleh Navy SEAL untuk mengurangi stres dan meningkatkan fokus. Teknik ini juga dikenal sebagai <em>Square Breathing</em> atau <em>Tactical Breathing</em>.
+            </p>
+            <p>
+                <strong>Cara melakukannya:</strong> Tarik napas selama 4 detik, tahan selama 4 detik, hembuskan selama 4 detik, dan tahan lagi selama 4 detik. Ulangi siklus ini 4-6 kali untuk hasil optimal.
+            </p>
+            <p>
+                <strong>Manfaat:</strong> Mengurangi kecemasan, menurunkan tekanan darah, meningkatkan konsentrasi, dan membantu tidur lebih baik.
+            </p>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2024 <a href="https://aurazein.my.id">Aurazein</a> - Mindfulness & Wellness</p>
+    </footer>
+    
+    <script>
+        // State variables
+        let isActive = false;
+        let currentPhase = 'idle';
+        let countdown = 4;
+        let cycleCount = 0;
+        let breathCount = 0;
+        let totalSeconds = 0;
+        let interval = null;
+        let progress = 0;
+        let boxSize = 180;
+        let soundEnabled = true;
+        
+        // Settings
+        let settings = {
+            inhale: 4,
+            hold: 4,
+            exhale: 4,
+            holdOut: 4
+        };
+        
+        // Phase configuration
+        const phases = {
+            inhale: { label: 'Tarik Napas', instruction: 'Tarik napas perlahan...' },
+            holdIn: { label: 'Tahan', instruction: 'Tahan napas...' },
+            exhale: { label: 'Hembuskan', instruction: 'Hembuskan perlahan...' },
+            holdOut: { label: 'Tahan', instruction: 'Tahan kosong...' },
+            idle: { label: 'Siap', instruction: 'Tekan Mulai untuk memulai sesi pernapasan' }
+        };
+        
+        const phaseOrder = ['inhale', 'holdIn', 'exhale', 'holdOut'];
+        
+        // Audio context
+        let audioContext = null;
+        
+        function playSound(frequency = 440, duration = 150) {
+            if (!soundEnabled) return;
+            
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+        
+        function getPhaseDuration(phase) {
+            switch (phase) {
+                case 'inhale': return settings.inhale;
+                case 'holdIn': return settings.hold;
+                case 'exhale': return settings.exhale;
+                case 'holdOut': return settings.holdOut;
+                default: return 4;
+            }
+        }
+        
+        function updateDisplay() {
+            const box = document.getElementById('breathingBox');
+            const glow = document.getElementById('outerGlow');
+            const countdownEl = document.getElementById('countdown');
+            const phaseLabel = document.getElementById('phaseLabel');
+            const instruction = document.getElementById('instruction');
+            
+            // Update phase class
+            box.className = `breathing-box phase-${currentPhase}`;
+            
+            // Update countdown
+            countdownEl.textContent = currentPhase === 'idle' ? settings.inhale : Math.ceil(countdown);
+            
+            // Update phase label
+            phaseLabel.textContent = phases[currentPhase].label;
+            
+            // Update instruction
+            instruction.textContent = phases[currentPhase].instruction;
+            
+            // Update progress ring
+            const circle = document.getElementById('progressCircle');
+            const duration = getPhaseDuration(currentPhase);
+            const progressPercent = currentPhase === 'idle' ? 0 : ((duration - countdown) / duration);
+            const circumference = 2 * Math.PI * 95;
+            circle.style.strokeDashoffset = circumference * (1 - progressPercent);
+            
+            // Update box size for animation
+            if (currentPhase === 'inhale') {
+                boxSize = 180 + (progressPercent * 40);
+            } else if (currentPhase === 'exhale') {
+                boxSize = 220 - (progressPercent * 40);
+            } else {
+                boxSize = Math.max(180, boxSize);
+            }
+            
+            box.style.width = `${boxSize}px`;
+            box.style.height = `${boxSize}px`;
+            glow.style.width = `${boxSize * 1.3}px`;
+            glow.style.height = `${boxSize * 1.3}px`;
+        }
+        
+        function updateStats() {
+            document.getElementById('cycleCount').textContent = cycleCount;
+            document.getElementById('breathCount').textContent = breathCount;
+            document.getElementById('totalTime').textContent = totalSeconds;
+        }
+        
+        function startBreathingLoop() {
+            if (!isActive) return;
+            
+            const duration = getPhaseDuration(currentPhase);
+            
+            interval = setInterval(() => {
+                countdown -= 0.1;
+                progress = ((duration - countdown) / duration) * 100;
+                
+                updateDisplay();
+                
+                if (countdown <= 0) {
+                    // Play transition sound
+                    playSound(currentPhase === 'inhale' || currentPhase === 'exhale' ? 523.25 : 440);
+                    
+                    // Move to next phase
+                    const currentIndex = phaseOrder.indexOf(currentPhase);
+                    const nextIndex = (currentIndex + 1) % phaseOrder.length;
+                    const nextPhase = phaseOrder[nextIndex];
+                    
+                    currentPhase = nextPhase;
+                    countdown = getPhaseDuration(nextPhase);
+                    
+                    // Count breaths when completing exhale
+                    if (nextPhase === 'holdOut') {
+                        breathCount++;
+                    }
+                    
+                    // Count cycles when completing holdOut
+                    if (nextPhase === 'inhale' && currentIndex === 3) {
+                        cycleCount++;
+                    }
+                    
+                    updateStats();
+                }
+            }, 100);
+        }
+        
+        function toggleBreathing() {
+            const btn = document.getElementById('mainBtn');
+            const icon = document.getElementById('mainBtnIcon');
+            const text = document.getElementById('mainBtnText');
+            
+            if (!isActive) {
+                // Starting
+                if (currentPhase === 'idle') {
+                    currentPhase = 'inhale';
+                    countdown = settings.inhale;
+                }
+                isActive = true;
+                btn.classList.add('paused');
+                icon.textContent = '⏸';
+                text.textContent = 'Jeda';
+                playSound(659.25, 200);
+                startBreathingLoop();
+            } else {
+                // Pausing
+                isActive = false;
+                clearInterval(interval);
+                btn.classList.remove('paused');
+                icon.textContent = '▶';
+                text.textContent = 'Lanjut';
+                playSound(329.63, 200);
+            }
+        }
+        
+        function resetBreathing() {
+            isActive = false;
+            clearInterval(interval);
+            currentPhase = 'idle';
+            countdown = settings.inhale;
+            cycleCount = 0;
+            breathCount = 0;
+            totalSeconds = 0;
+            progress = 0;
+            boxSize = 180;
+            
+            const btn = document.getElementById('mainBtn');
+            const icon = document.getElementById('mainBtnIcon');
+            const text = document.getElementById('mainBtnText');
+            
+            btn.classList.remove('paused');
+            icon.textContent = '▶';
+            text.textContent = 'Mulai';
+            
+            updateDisplay();
+            updateStats();
+            playSound(261.63, 300);
+        }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+        
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const text = document.getElementById('settingsToggleText');
+            
+            panel.classList.toggle('active');
+            text.textContent = panel.classList.contains('active') ? 'Sembunyikan Pengaturan' : 'Tampilkan Pengaturan';
+        }
+        
+        function updateSetting(type, value) {
+            settings[type] = parseInt(value);
+            document.getElementById(`${type}Value`).textContent = `${value}s`;
+            
+            if (currentPhase === 'idle') {
+                document.getElementById('countdown').textContent = settings.inhale;
+            }
+        }
+        
+        // Initialize particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#00d4ff', '#7b2cbf', '#ff6b6b', '#3b82f6'];
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = `${Math.random() * 100 + 50}px`;
+                particle.style.height = particle.style.width;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDelay = `${Math.random() * 20}s`;
+                particle.style.animationDuration = `${Math.random() * 20 + 15}s`;
+                container.appendChild(particle);
+            }
+        }
+        
+        // Calculate total seconds
+        setInterval(() => {
+            if (isActive) {
+                totalSeconds++;
+                updateStats();
+            }
+        }, 1000);
+        
+        // Initialize
+        createParticles();
+        updateDisplay();
+        
+        // Disable sliders when active
+        const originalToggleBreathing = toggleBreathing;
+        toggleBreathing = function() {
+            originalToggleBreathing();
+            
+            const sliders = document.querySelectorAll('.setting-slider');
+            sliders.forEach(slider => {
+                slider.disabled = isActive;
+            });
+        };
+    </script>
+</body>
+</html>

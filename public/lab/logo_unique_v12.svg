@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Cloud shape -->
+  <path d="M 12 36 Q 4 36 4 28 Q 4 20 12 20 Q 12 10 24 10 Q 36 10 36 20 Q 44 20 44 28 Q 44 36 36 36 Z" fill="url(#tealGrad)"/>
+  <!-- Play inside cloud -->
+  <polygon points="16,20 16,32 30,26" fill="#ffffff"/>
+  <!-- Tiny wink -->
+  <circle cx="24" cy="28" r="1.5" fill="url(#tealGrad)"/>
+  <path d="M 28 28 L 32 28" stroke="url(#tealGrad)" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

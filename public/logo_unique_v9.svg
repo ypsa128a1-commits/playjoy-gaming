@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Diamond rotated square -->
+  <rect x="8" y="8" width="32" height="32" rx="6" fill="url(#tealGrad)" transform="rotate(45 24 24)"/>
+  <!-- Play inside -->
+  <polygon points="18,14 18,34 36,24" fill="#ffffff"/>
+  <!-- Face -->
+  <circle cx="23" cy="21" r="2" fill="url(#tealGrad)"/>
+  <path d="M 28 21 L 32 21" stroke="url(#tealGrad)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 22 28 Q 27 33 32 28" fill="none" stroke="url(#tealGrad)" stroke-width="2" stroke-linecap="round"/>
+</svg>

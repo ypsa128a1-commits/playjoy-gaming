@@ -1,0 +1,5 @@
+AuthType Basic
+AuthName "Lab Access - Password Required"
+AuthUserFile /home/aurazenm/game/public/.htpasswd
+Require valid-user
+

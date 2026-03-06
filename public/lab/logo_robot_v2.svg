@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Robot Head - rounded square -->
+  <rect x="6" y="6" width="36" height="36" rx="10" ry="10" fill="url(#tealGrad)"/>
+  
+  <!-- Left Eye - circular robot eye -->
+  <circle cx="17" cy="20" r="5" fill="#ffffff"/>
+  <circle cx="17" cy="20" r="2.5" fill="#1a1a2e"/>
+  
+  <!-- Right Eye - circular robot eye -->
+  <circle cx="31" cy="20" r="5" fill="#ffffff"/>
+  <circle cx="31" cy="20" r="2.5" fill="#1a1a2e"/>
+  
+  <!-- Simple curved smile -->
+  <path d="M 17 30 Q 24 37 31 30" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

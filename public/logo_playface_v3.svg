@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Circle background -->
+  <circle cx="24" cy="24" r="22" fill="url(#tealGrad)"/>
+  <!-- Play button as white triangle with face inside -->
+  <polygon points="14,10 14,38 40,24" fill="#ffffff"/>
+  <!-- Face on white play button - fully inside -->
+  <circle cx="20" cy="21" r="2.5" fill="url(#tealGrad)"/>
+  <path d="M 27 21 L 32 21" stroke="url(#tealGrad)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 19 29 Q 25 34 31 29" fill="none" stroke="url(#tealGrad)" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <style>
+    @media (max-width: 640px) {
+      .font-display.font-bold.text-xl { display: inline !important; visibility: visible !important; }
+      .hashtag { display: block !important; margin-left: 0 !important; margin-top: 4px !important; font-size: 70% !important; }
+    }
+    @media (min-width: 641px) {
+      .font-display.font-bold.text-xl { display: inline !important; }
+      .hashtag { display: inline !important; margin-left: 8px !important; margin-top: 0 !important; font-size: 100% !important; }
+    }
+    button[aria-label="Previous game"] { left: 5rem !important; }
+    button[aria-label="Next game"] { right: 5rem !important; }
+    .leading-relaxed { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-height: 3em; }
+    
+    #game-overlay {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999999 !important;
+      background: #000 !important;
+      display: none !important;
+    }
+    #game-overlay.active { display: flex !important; }
+    #game-overlay iframe { width: 100% !important; height: 100% !important; border: none !important; }
+    #game-overlay .close-btn {
+      position: absolute !important;
+      top: 20px !important;
+      right: 80px !important;
+      background: #f00 !important;
+      color: #fff !important;
+      border: none !important;
+      padding: 10px 20px !important;
+      cursor: pointer !important;
+      font-size: 16px !important;
+      z-index: 10000000 !important;
+    }
+  </style>
+  <script>window.IS_LAB=false;</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurazein - Play Free HTML5 Games Online</title>
+    <meta name="description" content="Play thousands of free HTML5 games online at Aurazein." />
+    <meta name="theme-color" content="#00d4aa" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script type="module" crossorigin src="/assets/index-CQn4MAOt.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-1X3cOtBS.css">
+    <style>
+    button:has-text("Deploy"), div[class*="tab"]:has(button:has-text("Deploy")), button:has(span:has-text("Deploy")), [data-tab="deploy"] { display: none !important; visibility: hidden !important; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <!-- GAME OVERLAY -->
+    <div id="game-overlay">
+      <button class="close-btn" onclick="closeGame()">✕ Tutup</button>
+      <iframe id="game-iframe" src="" allow="autoplay; fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture; gamepad"></iframe>
+    </div>
+    
+    <script>
+    function closeGame() {
+      document.getElementById('game-overlay').classList.remove('active');
+      document.getElementById('game-iframe').src = '';
+    }
+    
+    window.playGame = function(gameId) {
+      console.log('[PLAYGAME] Called with ID:', gameId);
+      
+      fetch('/api/games/' + gameId)
+        .then(function(res) { return res.json(); })
+        .then(function(game) {
+          console.log('[PLAYGAME] Game data:', game);
+          
+          if (!game || !game.id) {
+            alert('Game tidak ditemukan!');
+            return;
+          }
+          
+          var iframeUrl = game.iframe_url || game.url || '';
+          
+          if (!iframeUrl) {
+            alert('Game ini tidak memiliki URL embed!');
+            return;
+          }
+          
+          var overlay = document.getElementById('game-overlay');
+          var iframe = document.getElementById('game-iframe');
+          
+          iframe.src = iframeUrl;
+          overlay.classList.add('active');
+          
+          if (iframeUrl.indexOf('gamemonetize') > -1) {
+            var script = document.createElement('script');
+            script.src = 'https://api.gamemonetize.com/cms_iframe.js?' + Date.now();
+            document.body.appendChild(script);
+          }
+        })
+        .catch(function(err) {
+          console.error('[PLAYGAME] Error:', err);
+          alert('Error: ' + err.message);
+        });
+    };
+    
+    // Global variables for category modal
+    window.catPage = 1;
+    window.catTotalPages = 1;
+    window.catAllGames = [];
+    window.catGamesPerPage = 16;
+    window.catCurrentCategory = '';
+    
+    window.closeCategoryModal = function() {
+      var modal = document.getElementById('fixed-category-modal');
+      if (modal && modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+      }
+    };
+    
+    window.loadCategoryGames = function(page) {
+      window.catPage = page;
+      var categoryName = window.catCurrentCategory;
+      
+      var cleanedName = categoryName.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      
+      fetch('/api/games?category=' + encodeURIComponent(cleanedName))
+        .then(function(res) { return res.json(); })
+        .then(function(response) {
+          window.catAllGames = [];
+          if (response.success === true && Array.isArray(response.data)) {
+            window.catAllGames = response.data;
+          } else if (Array.isArray(response)) {
+            window.catAllGames = response;
+          }
+          
+          window.catTotalPages = Math.ceil(window.catAllGames.length / window.catGamesPerPage);
+          var start = (page - 1) * window.catGamesPerPage;
+          var end = start + window.catGamesPerPage;
+          var pageGames = window.catAllGames.slice(start, end);
+          
+          // Update count
+          var countEl = document.getElementById('cat-game-count');
+          if (countEl) {
+            countEl.textContent = window.catAllGames.length + ' games found';
+          }
+          
+          // Render games
+          var gamesContainer = document.getElementById('cat-games-container');
+          if (gamesContainer) {
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;">';
+            
+            if (pageGames.length > 0) {
+              for (var i = 0; i < pageGames.length; i++) {
+                var game = pageGames[i];
+                var gid = game.id;
+                var gtitle = game.title;
+                var gthumb = game.thumbnail || null;
+                
+                html += '<div onclick="window.playGameFromCategory(' + gid + ')" style="background:#1a1a1a;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform=\'translateY(-4px)\';this.style.background=\'#252525\';" onmouseout="this.style.transform=\'translateY(0)\';this.style.background=\'#1a1a1a\';">';
+                html += '<div style="aspect-ratio:4/3;background:#222;overflow:hidden;">';
+                if (gthumb) {
+                  html += '<img src="' + gthumb + '" alt="' + gtitle + '" style="width:100%;height:100%;object-fit:cover;display:block;">';
+                } else {
+                  html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#444;font-size:36px;">🎮</div>';
+                }
+                html += '</div>';
+                html += '<div style="padding:10px;"><h4 style="font-size:13px;font-weight:600;color:#fff;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + gtitle + '</h4></div>';
+                html += '</div>';
+              }
+            } else {
+              html += '<div style="text-align:center;padding:40px;color:#666;grid-column:1/-1;">No games found</div>';
+            }
+            
+            html += '</div>';
+            gamesContainer.innerHTML = html;
+          }
+          
+          // Render pagination
+          var pagContainer = document.getElementById('cat-pagination');
+          if (pagContainer) {
+            var pagHtml = '<div style="display:flex;align-items:center;gap:12px;">';
+            
+            if (page > 1) {
+              pagHtml += '<button onclick="window.loadCategoryGames(' + (page - 1) + ')" style="background:#222;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;">&lt; Prev</button>';
+            }
+            
+            pagHtml += '<span style="color:#fff;font-size:14px;"><span style="background:#4ade80;color:#000;padding:4px 10px;border-radius:6px;font-weight:700;font-size:13px;">' + page + '</span> of ' + window.catTotalPages + '</span>';
+            
+            if (page < window.catTotalPages) {
+              pagHtml += '<button onclick="window.loadCategoryGames(' + (page + 1) + ')" style="background:#222;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;">Next &gt;</button>';
+            }
+            
+            pagHtml += '</div>';
+            pagContainer.innerHTML = pagHtml;
+          }
+        })
+        .catch(function(err) {
+          var gamesContainer = document.getElementById('cat-games-container');
+          if (gamesContainer) {
+            gamesContainer.innerHTML = '<div style="text-align:center;padding:40px;color:#f87171;">Error: ' + err.message + '</div>';
+          }
+        });
+    };
+    
+    window.playGameFromCategory = function(gameId) {
+      window.closeCategoryModal();
+      window.playGame(gameId);
+    };
+    
+    window.showCategoryModal = function(categoryName) {
+      // Remove existing modal
+      var existing = document.getElementById('fixed-category-modal');
+      if (existing && existing.parentNode) {
+        existing.parentNode.removeChild(existing);
+      }
+      
+      window.catCurrentCategory = categoryName;
+      window.catPage = 1;
+      
+      // Create modal
+      var modal = document.createElement('div');
+      modal.id = 'fixed-category-modal';
+      modal.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:999999;display:flex;align-items:center;justify-content:center;">' +
+        '<div style="background:#111;border-radius:12px;width:95%;max-width:1100px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;">' +
+        '<div style="padding:20px 24px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center;background:#1a1a1a;">' +
+        '<div style="display:flex;align-items:center;">' +
+        '<span style="color:#4ade80;font-size:20px;margin-right:8px;">🧩</span>' +
+        '<span style="color:#fff;font-size:20px;font-weight:700;">' + categoryName.charAt(0).toUpperCase() + categoryName.slice(1) + ' Games</span>' +
+        '<span id="cat-game-count" style="color:#888;font-size:13px;margin-left:12px;">0 games found</span>' +
+        '</div>' +
+        '<button onclick="window.closeCategoryModal()" style="background:transparent;color:#888;border:none;font-size:24px;cursor:pointer;padding:8px;border-radius:6px;width:36px;height:36px;">✕</button>' +
+        '</div>' +
+        '<div id="cat-games-container" style="padding:20px 24px;overflow-y:auto;flex:1;"><div style="text-align:center;padding:40px;color:#666;">Loading...</div></div>' +
+        '<div id="cat-pagination" style="padding:14px 24px;border-top:1px solid #333;display:flex;justify-content:center;align-items:center;background:#1a1a1a;"><span style="color:#666;">Loading...</span></div>' +
+        '</div>' +
+        '</div>';
+      
+      document.body.appendChild(modal);
+      
+      // Load games
+      window.loadCategoryGames(1);
+    };
+    
+    // Category detection
+    (function() {
+      function handleCategoryClicks() {
+        var all = document.querySelectorAll('*');
+        
+        for (var i = 0; i < all.length; i++) {
+          var el = all[i];
+          var text = el.textContent || el.innerText || '';
+          var href = el.getAttribute('href') || '';
+          
+          var cats = ['puzzle', 'racing', 'sports', 'girls', 'action', 'arcade', 'adventure'];
+          var catName = null;
+          
+          if (href && (href.indexOf('/category/') > -1 || href.indexOf('/kategori/') > -1)) {
+            var m = href.match(/\/(?:category|kategori)\/([^\/\?#]+)/i);
+            if (m) {
+              catName = decodeURIComponent(m[1]).replace(/\+/g, ' ');
+            }
+          } else {
+            for (var c = 0; c < cats.length; c++) {
+              if (text.toLowerCase().indexOf(cats[c]) > -1) {
+                catName = cats[c];
+                break;
+              }
+            }
+          }
+          
+          if (catName && !el.getAttribute('data-cat-handler')) {
+            el.setAttribute('data-cat-handler', 'true');
+            el.style.cursor = 'pointer';
+            
+            (function(name, elem) {
+              elem.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.showCategoryModal(name);
+                return false;
+              }, true);
+            })(catName, el);
+          }
+        }
+      }
+      
+      setInterval(handleCategoryClicks, 1000);
+      setTimeout(handleCategoryClicks, 1500);
+    })();
+    </script>
+    
+    <script>
+    (function(){
+      function addHashtag() {
+        var selectors = ['.font-display.font-bold.text-xl', '[class*="font-display"][class*="font-bold"]', 'nav span:first-child', 'nav a span'];
+        var navTitle = null;
+        for (var i = 0; i < selectors.length; i++) {
+          var el = document.querySelector(selectors[i]);
+          if (el && el.textContent.trim().length > 0 && el.textContent.trim().length < 20) { navTitle = el; break; }
+        }
+        if (navTitle && !navTitle.querySelector('.hashtag')) {
+          var text = navTitle.textContent.trim().toUpperCase();
+          if (text.indexOf('PLAY') > -1 || text.indexOf('AUR') > -1) {
+            navTitle.innerHTML = text + ' <span class="hashtag" style="font-weight:700;margin-left:8px;background:linear-gradient(90deg,#00d4aa,#00a388);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">#NikmatnyaRileks</span>';
+          }
+        }
+      }
+      var attempt = 0;
+      function tryAdd() { attempt++; addHashtag(); if (attempt < 10) setTimeout(tryAdd, 500); }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', tryAdd); } else { tryAdd(); }
+    })();
+    </script>
+  </body>
+</html>

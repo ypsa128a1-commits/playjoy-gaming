@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Simple "P" shape that looks like play button -->
+  <path d="M 8 4 L 8 44 L 16 44 L 16 28 L 28 28 Q 44 28 44 16 Q 44 4 28 4 Z M 16 12 L 28 12 Q 36 12 36 16 Q 36 20 28 20 L 16 20 Z" fill="url(#tealGrad)"/>
+  <!-- Tiny wink face -->
+  <circle cx="32" cy="14" r="1.5" fill="#ffffff"/>
+  <path d="M 22 22 Q 26 25 30 22" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

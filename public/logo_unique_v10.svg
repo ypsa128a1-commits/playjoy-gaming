@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#00a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Two circles stacked like figure-8 / infinity turned -->
+  <circle cx="24" cy="14" r="12" fill="url(#tealGrad)"/>
+  <circle cx="24" cy="34" r="12" fill="url(#tealGrad)"/>
+  <!-- Play suggestion in negative space -->
+  <polygon points="20,14 28,10 28,18" fill="#ffffff"/>
+  <!-- Face on top circle -->
+  <circle cx="20" cy="12" r="2" fill="#ffffff"/>
+  <path d="M 26 12 L 30 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 19 18 Q 24 22 29 18" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

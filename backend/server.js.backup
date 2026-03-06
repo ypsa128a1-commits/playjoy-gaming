@@ -1,0 +1,32 @@
+/**
+ * Server Entry Point
+ * Starts the HTTP server
+ */
+
+const app = require('./app');
+
+// Check if we should start the server
+// This happens when:
+// 1. This file is run directly (require.main === module)
+// 2. Or when loaded from app.js in standalone mode (PORT env var is set or running directly)
+const shouldStartServer = 
+  require.main === module || 
+  process.env.PORT !== undefined ||
+  (require.main && require.main.filename && require.main.filename.includes('app.js'));
+
+if (shouldStartServer || !module.parent) {
+  const PORT = process.env.PORT || 3000;
+  
+  // Only listen if not already listening
+  if (!app._listening) {
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📁 MVC Architecture: backend/`);
+      console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
+      app._listening = true;
+    });
+  }
+}
+
+// Export for Passenger (cPanel)
+module.exports = app;
